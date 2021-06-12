@@ -26,6 +26,9 @@ class ProfileManager:
         else:
             return []
 
+    def get_all(self):
+        return self.profiles.all()
+
     def to_json(self, profile):
         return {
             "username": profile.get('username', ''),
@@ -156,6 +159,25 @@ def history():
                 'status': 1,
                 'uuid': user_id,
                 'histories': histories
+            }
+        except:
+            return {
+                'status': 0
+            }
+
+@app.route('/profiles', methods=['GET'])
+def profiles():
+    if request.method == 'GET':
+        try:
+            user_id = request.args.get('id')
+            profiles = profileManager.get_all()
+            for i in range(len(profiles)):
+                if (profiles[i]['id'] == user_id):
+                    del profiles[i]
+                    break
+            return {
+                'status': 1,
+                'profiles': profiles
             }
         except:
             return {
