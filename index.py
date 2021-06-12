@@ -84,7 +84,7 @@ def profile():
             )[0]
             return {
                 'status': 1,
-                'uuid': profile['id']
+                'id': profile['id']
             }
         except:
             return {
@@ -92,22 +92,22 @@ def profile():
             }
 
     elif request.method == 'GET':
-        # try:
+        try:
             user_id = request.args.get('id')
             print(user_id)
             profile = profileManager.get(user_id)[0]
             print(profile)
             return {
                 'status': 1,
-                'uuid': profile['id'],
+                'id': profile['id'],
                 'username': profile['username'],
                 'content': profile['content'],
                 'location': profile['location']
             }
-        # except:
-        #     return {
-        #         'status': 0
-        #     }
+        except:
+            return {
+                'status': 0
+            }
 
     elif request.method == 'DELETE':
         try:
@@ -128,7 +128,7 @@ def profile():
             print(profile)
             return {
                 'status': 1,
-                'uuid': profile['id']
+                'id': profile['id']
             }
         except:
             return {
@@ -157,7 +157,7 @@ def history():
             histories = profileManager.add_meeting(user_id, meeting_data)
             return {
                 'status': 1,
-                'uuid': user_id,
+                'id': user_id,
                 'histories': histories
             }
         except:
