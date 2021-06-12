@@ -1,1 +1,1 @@
-{"_default": {}, "profiles": {"1": {"username": "1234568", "content": "123456", "location": "1234", "histories": [], "id": "2"}}}
+{"_default": {}, "profiles": {"1": {"username": "1234568", "content": "123456", "location": "1234", "histories": [{"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}, {"location": "1234", "time": "123"}], "id": "3"}}}

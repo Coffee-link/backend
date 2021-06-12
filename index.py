@@ -35,8 +35,13 @@ class ProfileManager:
             "histories": profile.get('histories')
         }
     
-    def add_meeting(self, meeting):
-        return True
+    def add_meeting(self, id, meeting_data):
+        profile = self.get(id)
+        print(profile[0])
+        prev_histories = profile[0].get('histories')
+        prev_histories.append(meeting_data)
+        self.profiles.update({ 'histories': prev_histories }, self.Profile.id == id)
+        return prev_histories
 
     def get(self, id):
         return self.profiles.search(self.Profile.id == id)
@@ -125,6 +130,38 @@ def profile():
             return {
                 'status': 0
             }
+
+
+@app.route('/profile/history', methods=['GET', 'PUT'])
+def history():
+    if request.method == 'GET':
+        try:
+            user_id = getId(request)
+            profile = profileManager.get(user_id)[0]
+            return {
+                'status': 1,
+                'history': profile['histories']
+            }
+        except:
+            return {
+                'status': 0
+            }
+
+    elif request.method == 'PUT':
+        try:
+            user_id = getId(request)
+            meeting_data = request.json['data']
+            histories = profileManager.add_meeting(user_id, meeting_data)
+            return {
+                'status': 1,
+                'uuid': user_id,
+                'histories': histories
+            }
+        except:
+            return {
+                'status': 0
+            }
+
 
 @app.route('/wx/login', methods=['GET'])
 def wx_login():

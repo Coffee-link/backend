@@ -33,4 +33,12 @@ curl -X POST \
 curl -X GET \
   '127.0.0.1:5000/wx/login?jscode=1' \
   -H 'Content-Type: application/json; charset=utf-8' 
-  
+
+
+curl -X PUT \
+  '127.0.0.1:5000/profile/history' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{
+  "id": "2",
+  "data": {"location":"1234", "time":"123"}
+}'
