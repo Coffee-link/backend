@@ -90,7 +90,7 @@ def profile():
 
     elif request.method == 'GET':
         try:
-            user_id = getId(request)
+            user_id = request.args.get('id')
             profile = profileManager.get(user_id)[0]
             print(profile)
             return {
@@ -131,12 +131,11 @@ def profile():
                 'status': 0
             }
 
-
 @app.route('/profile/history', methods=['GET', 'PUT'])
 def history():
     if request.method == 'GET':
         try:
-            user_id = getId(request)
+            user_id = request.args.get('id')
             profile = profileManager.get(user_id)[0]
             return {
                 'status': 1,
@@ -161,7 +160,6 @@ def history():
             return {
                 'status': 0
             }
-
 
 @app.route('/wx/login', methods=['GET'])
 def wx_login():
