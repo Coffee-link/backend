@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from tinydb import TinyDB, Query
 from tinydb import Query
+import requests
 
 db = TinyDB('./db.json')
 
@@ -66,7 +67,7 @@ def getId(request):
     return user_id
 
 @app.route('/profile', methods=['POST', 'GET', 'DELETE', 'PUT'])
-def add():
+def profile():
     if request.method == 'POST':
         try:
             raw_profile = request.json
@@ -126,3 +127,16 @@ def add():
         
 
         # profile.update(username, uuid, content, location)
+
+@app.route('/wx/login', methods=['GET'])
+def wx_login():
+    jscode = request.args.get('jscode')
+    url = "https://api.weixin.qq.com/sns/jscode2session"
+    r = requests.get(url, params={
+        'appid': 'wx78b952b8d9c46fa7',
+        'secret': '39e5d67b0a8c79cab96f9e38c27f3e0a',
+        'js_code': jscode,
+        'grant_type':  'authorization_code'
+    })
+
+    return r.json()
