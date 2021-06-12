@@ -89,21 +89,22 @@ def profile():
             }
 
     elif request.method == 'GET':
-        try:
+        # try:
             user_id = request.args.get('id')
+            print(user_id)
             profile = profileManager.get(user_id)[0]
             print(profile)
             return {
                 'status': 1,
-                'uuid': profile['uuid'],
+                'uuid': profile['id'],
                 'username': profile['username'],
                 'content': profile['content'],
                 'location': profile['location']
             }
-        except:
-            return {
-                'status': 0
-            }
+        # except:
+        #     return {
+        #         'status': 0
+        #     }
 
     elif request.method == 'DELETE':
         try:
