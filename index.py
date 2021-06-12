@@ -12,7 +12,7 @@ class Profile:
     def to_json(self):
         return {
             "username": self.username,
-            "id": self.uuid,
+            "uuid": self.uuid,
             "content": self.content,
             "location": self.location
         }
@@ -44,28 +44,56 @@ def show_user_profile(username):
         "user": username
     }
 
-@app.route('/profile', methods=["POST", "GET"])
+@app.route('/profile', methods=['POST', 'GET', 'DELETE', 'PUT'])
 def add():
     if request.method == 'POST':
-        raw_profile = request.json
-        profile = Profile(raw_profile)
-        profiles.append(profile)
-        return {
-            'status': 1,
-            'uuid': profile.uuid
-        }
-        # profile = Profile(username, uuid, content, location)
-        # profiles.append(profile)
+        try:
+            raw_profile = request.json
+            profile = Profile(raw_profile[username], raw_profile[uuid], raw_profile[content], raw_profile[location])
+            profiles.append(profile)
+            return {
+                'status': 1,
+                'uuid': profile.uuid
+            }
+        except:
+            return {
+                'status': 0,
+            }
     elif request.method == 'GET':
-        raw_profile = request.json
-        id = raw_profile.id
-        print('get profile')
-        return 'get profile'
+        try:
+            profile = profiles.get(request.json)
+            return {
+                'status': 1,
+                'username': profile.username,
+                'content': profile.content,
+                'location': profile.location
+            }
+        except:
+            return {
+                'status': 0
+            }
         # return profile
     elif request.method == 'DELETE':
-        print('DELETE profile')
-        return 'DELETE profile'
-        # profiles.remove(profile)
+        try:
+            profiles.delete(request.json)
+            return {
+                'status': 1
+            }
+        except:
+            return {
+                'status':0
+            }
     elif request.method == 'PUT':
-        return 'hiiii'
+        try:
+            profiles.update(request.json)
+            return {
+                'status': 1,
+                'uuid': profile.uuid
+            }
+        except:
+            return {
+                'status': 0
+            }
+        
+
         # profile.update(username, uuid, content, location)
