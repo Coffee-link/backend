@@ -90,6 +90,7 @@ def profile():
             print(profile)
             return {
                 'status': 1,
+                'uuid': profile['uuid'],
                 'username': profile['username'],
                 'content': profile['content'],
                 'location': profile['location']
@@ -124,9 +125,6 @@ def profile():
             return {
                 'status': 0
             }
-        
-
-        # profile.update(username, uuid, content, location)
 
 @app.route('/wx/login', methods=['GET'])
 def wx_login():
