@@ -1,0 +1,31 @@
+curl -X GET \
+  '127.0.0.1:5000/profile' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{
+  "id": "2"
+}'
+
+curl -X PUT \
+  '127.0.0.1:5000/profile' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{
+  "id": "2",
+  "data": {"content": "55"}
+}'
+
+curl -X DELETE \
+  '127.0.0.1:5000/profile' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{
+  "id": "2"
+}'
+
+curl -X POST \
+  '127.0.0.1:5000/profile' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -d '{
+  "id": "2",
+  "content": "123456",
+  "location": "1234",
+  "username": "1234568"
+}'

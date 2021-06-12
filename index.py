@@ -1,7 +1,6 @@
-# from flask import Flask
-# from flask import request
+from flask import Flask
+from flask import request
 from tinydb import TinyDB, Query
-from tinydb import operations
 from tinydb import Query
 
 db = TinyDB('./db.json')
@@ -22,9 +21,9 @@ class ProfileManager:
                 "histories": []
             }
             self.profiles.insert(self.to_json(profile))
-            return True
+            return self.get(uuid)
         else:
-            return False
+            return []
 
     def to_json(self, profile):
         return {
@@ -36,7 +35,7 @@ class ProfileManager:
         }
     
     def add_meeting(self, meeting):
-        self.histories.append(meeting)
+        return True
 
     def get(self, id):
         return self.profiles.search(self.Profile.id == id)
@@ -47,51 +46,83 @@ class ProfileManager:
 
     def update(self, id, data):
         for k in data.keys():
+            print('key', k)
             self.profiles.update({k: data[k]}, self.Profile.id == id)
+        return self.get(id)
 
-m = ProfileManager()
-m.add_profiles('1', '2', '3', '4')
-print(m.get('2'))
-m.update('2', {
-    'location': '1234'
-})
-print(m.get('2'))
-# app = Flask(__name__)
+profileManager = ProfileManager()
 
-# @app.route('/')
-# def hello():
-#     # show the user profile for that user
-#     return 'hello'
+app = Flask(__name__)
 
-# @app.route('/user/<username>')
-# def show_user_profile(username):
-#     # show the user profile for that user
-#     return {
-#         "user": username
-#     }
+@app.route('/')
+def hello():
+    # show the user profile for that user
+    return 'mainpage'
 
-# @app.route('/profile', methods=["POST", "GET", "DELETE", "PUT"])
-# def add():
-#     if request.method == 'POST':
-#         raw_profile = request.json
-#         profile = Profile(raw_profile)
-#         profiles.append(profile)
-#         return {
-#             'status': 1,
-#             'uuid': profile.uuid
-#         }
-#         # profile = Profile(username, uuid, content, location)
-#         # profiles.append(profile)
-#     elif request.method == 'GET':
-#         raw_profile = request.json
-#         id = raw_profile.id
-#         print('get profile')
-#         return 'get profile'
-#         # return profile
-#     elif request.method == 'DELETE':
-#         print('DELETE profile')
-#         return 'DELETE profile'
-#         # profiles.remove(profile)
-#     elif request.method == 'PUT':
-#         return 'hiiii'
-#         # profile.update(username, uuid, content, location)
+def getId(request):
+    user_id = request.json.get('id', '')
+    if not user_id:
+        raise ValueError()
+    return user_id
+
+@app.route('/profile', methods=['POST', 'GET', 'DELETE', 'PUT'])
+def add():
+    if request.method == 'POST':
+        try:
+            raw_profile = request.json
+            profile = profileManager.add_profiles(
+                raw_profile['username'], raw_profile['id'], raw_profile['content'], raw_profile['location']
+            )[0]
+            return {
+                'status': 1,
+                'uuid': profile['id']
+            }
+        except:
+            return {
+                'status': 0,
+            }
+
+    elif request.method == 'GET':
+        try:
+            user_id = getId(request)
+            profile = profileManager.get(user_id)[0]
+            print(profile)
+            return {
+                'status': 1,
+                'username': profile['username'],
+                'content': profile['content'],
+                'location': profile['location']
+            }
+        except:
+            return {
+                'status': 0
+            }
+
+    elif request.method == 'DELETE':
+        try:
+            user_id = getId(request)
+            profileManager.delete(request.json)
+            return {
+                'status': 1
+            }
+        except:
+            return {
+                'status':0
+            }
+
+    elif request.method == 'PUT':
+        try:
+            user_id = getId(request)
+            profile = profileManager.update(user_id, request.json.get('data', {}))[0]
+            print(profile)
+            return {
+                'status': 1,
+                'uuid': profile['id']
+            }
+        except:
+            return {
+                'status': 0
+            }
+        
+
+        # profile.update(username, uuid, content, location)
