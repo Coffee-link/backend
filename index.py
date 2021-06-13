@@ -1,8 +1,11 @@
+# -*- coding: UTF-8 -*-
+
 from flask import Flask
 from flask import request
 from tinydb import TinyDB, Query
 from tinydb import Query
 import requests
+import json
 
 db = TinyDB('./db.json')
 
@@ -154,6 +157,7 @@ def history():
         try:
             user_id = getId(request)
             meeting_data = request.json['data']
+            
             histories = profileManager.add_meeting(user_id, meeting_data)
             return {
                 'status': 1,
@@ -194,5 +198,68 @@ def wx_login():
         'js_code': jscode,
         'grant_type':  'authorization_code'
     })
+
+    return r.json()
+
+@app.route('/wx/notify', methods=['POST'])
+def wx_notify():
+    print(request.json)
+    raw_data = request.json
+    from_user_id = raw_data.get('from')
+    to_user_id = raw_data.get('to')
+    addr = raw_data.get('addr')
+    start_date = raw_data.get('range')[0]
+    end_date = raw_data.get('range')[1]
+    msg_id = raw_data.get('msg_id')
+
+    fromUser = profileManager.get(from_user_id)
+
+    if (not len(fromUser)):
+        return {
+            'status': '0'
+        }
+
+    fromUser = fromUser[0]
+
+
+    url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send"
+
+    r = requests.get('https://api.weixin.qq.com/cgi-bin/token', params={
+        'grant_type': 'client_credential',
+        'appid': 'wx78b952b8d9c46fa7',
+        'secret': '39e5d67b0a8c79cab96f9e38c27f3e0a'
+    })
+
+    token = r.json()['access_token']
+
+    print("{url}/?access_token={token}".format(url=url, token=token))
+    
+    data={
+        'touser': to_user_id,
+        'template_id': '6mtp2i6Sf8wc0GRrASQs0gfN88Sb-p1ZJmjwHLiQ89I',
+        'page': 'page/index/index',
+        'miniprogramState': 'developer',
+        'data': {
+            'thing1': {
+                'value': '{user}, 请您喝咖啡了'.format(user=fromUser.get('username'))
+            },
+            'time6': {
+                'value': start_date
+            },
+            'time7': {
+                'value': end_date
+            },
+            'thing2': {
+                'value': addr
+            }
+        }
+    }
+    data = json.dumps(data)
+    # 数据格式化
+    # data = bytes(data, 'utf8')
+
+    r = requests.post("{url}?access_token={token}".format(url=url, token=token),  data=data)
+
+    print(r.json())
 
     return r.json()
