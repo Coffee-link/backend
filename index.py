@@ -138,7 +138,7 @@ def profile():
                 'status': 0
             }
 
-@app.route('/profile/history', methods=['GET', 'PUT'])
+@app.route('/profile/history', methods=['GET', 'PUT',])
 def history():
     if request.method == 'GET':
         try:
@@ -157,8 +157,12 @@ def history():
         try:
             user_id = getId(request)
             meeting_data = request.json['data']
+
+            to_user = meeting_data['to']
             
             histories = profileManager.add_meeting(user_id, meeting_data)
+            profileManager.add_meeting(to_user, meeting_data)
+
             return {
                 'status': 1,
                 'id': user_id,
