@@ -128,7 +128,6 @@ def profile():
         try:
             user_id = getId(request)
             profile = profileManager.update(user_id, request.json.get('data', {}))[0]
-            print(profile)
             return {
                 'status': 1,
                 'id': profile['id']
@@ -189,6 +188,20 @@ def history():
                     print(temp)
                     print(histories)
                     profileManager.profiles.update({ 'histories': histories }, profileManager.Profile.id == user_id)
+
+                    to_user = meeting_data['to']
+                    to_user_instance = profileManager.get(to_user)[0]
+                    histories = profileManager.add_meeting(user_id, meeting_data)
+                    for i in range(len(histories)):
+                        if (histories[i]['id'] == history_id):
+                            temp = {}
+                            for key,value in histories[i].items():
+                                temp[key] = value
+                            for key, value in data.items():
+                                temp[key] = value
+                            histories[i] = temp
+                            profileManager.profiles.update({ 'histories': histories }, profileManager.Profile.id == to_user)
+                            break
                     break
             return {
                 "status": 1
