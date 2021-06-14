@@ -156,8 +156,7 @@ def history():
     elif request.method == 'POST':
         try:
             user_id = getId(request)
-            meeting_data = request.json['data']
-
+            meeting_data = meeting_data.loads(request.json['data'])
             to_user = meeting_data['to']
             
             histories = profileManager.add_meeting(user_id, meeting_data)
