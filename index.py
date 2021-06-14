@@ -138,7 +138,7 @@ def profile():
                 'status': 0
             }
 
-@app.route('/profile/history', methods=['GET', 'PUT',])
+@app.route('/profile/history', methods=['GET', 'PUT', 'POST'])
 def history():
     if request.method == 'GET':
         try:
