@@ -71,8 +71,8 @@ def hello():
     # show the user profile for that user
     return 'mainpage'
 
-def getId(request):
-    user_id = request.json.get('id', '')
+def getId(request, key='id'):
+    user_id = request.json.get(key, '')
     if not user_id:
         raise ValueError()
     return user_id
@@ -153,7 +153,7 @@ def history():
                 'status': 0
             }
 
-    elif request.method == 'PUT':
+    elif request.method == 'POST':
         try:
             user_id = getId(request)
             meeting_data = request.json['data']
@@ -163,6 +163,32 @@ def history():
                 'status': 1,
                 'id': user_id,
                 'histories': histories
+            }
+        except:
+            return {
+                'status': 0
+            }
+    elif request.method == 'PUT':
+        try:
+            user_id = getId(request)
+            history_id = getId(request, 'history_id')
+            data = request.json['data']
+            user = profileManager.get(user_id)[0]
+            histories = user['histories']
+            for i in range(len(histories)):
+                if (histories[i]['id'] == history_id):
+                    temp = {}
+                    for key,value in histories[i].items():
+                        temp[key] = value
+                    for key, value in data.items():
+                        temp[key] = value
+                    histories[i] = temp
+                    print(temp)
+                    print(histories)
+                    profileManager.profiles.update({ 'histories': histories }, profileManager.Profile.id == user_id)
+                    break
+            return {
+                "status": 1
             }
         except:
             return {
@@ -220,7 +246,6 @@ def wx_notify():
         }
 
     fromUser = fromUser[0]
-
 
     url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send"
 
